@@ -306,4 +306,5 @@ __pycache__/
 OpenCover/
 
 **PracaInzynierska/Debug
-PracaInzynierska/PracaInzynierska.vcxproj
+*.vcxproj
+*.vcxproj.filters
