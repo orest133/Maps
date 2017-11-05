@@ -192,12 +192,12 @@ int main()
 
 	// Cubemap (Skybox)
 	vector<const GLchar*> faces;
-	faces.push_back("res/images/skyright.png");
-	faces.push_back("res/images/skyleft.png");
-	faces.push_back("res/images/skyup.png");
-	faces.push_back("res/images/skydown.png");
-	faces.push_back("res/images/skyfront.png");
-	faces.push_back("res/images/skyright2.png");
+	faces.push_back("res/images/right.bmp");
+	faces.push_back("res/images/left.bmp");
+	faces.push_back("res/images/top.bmp");
+	faces.push_back("res/images/bottom.bmp");
+	faces.push_back("res/images/front.bmp");
+	faces.push_back("res/images/back.bmp");
 
 	GLuint cubemapTexture = TextureLoading::LoadCubemap(faces);
 
