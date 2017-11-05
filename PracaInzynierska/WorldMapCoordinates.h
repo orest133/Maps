@@ -25,15 +25,25 @@ public:
 		{
 			topLeftX = adfGeoTransform[0];
 			topLeftY = adfGeoTransform[3];
+
 			heightPixel = adfGeoTransform[5];
 			widthPixel = adfGeoTransform[1];
 
 			widthMap = GDALGetRasterXSize(poDataset);
 			heightMap = GDALGetRasterYSize(poDataset);
+
 			topRightX = topLeftX + adfGeoTransform[1] * widthMap;
+			
 			bottomLeftY = topLeftY + adfGeoTransform[5] * heightMap;
+
 			convertGlobalPosToLocal();
-			std::cout << " Coordinate LeftX " << topLeftX << " , " << topLeftY << " RrghtTopX " << topRightX << std::endl << " Lenght pixel " << widthPixel << "," << heightPixel << std::endl << "Data size: " << widthMap << " " << heightMap << std::endl;
+			std::cout << "[INFO]: " << std::endl;
+			std::cout << "topLeftX: " << topLeftX << std::endl;
+			std::cout << "topLeftY: " << topLeftY << std::endl;
+			std::cout << "topRightX: " << topRightX << std::endl;
+			std::cout << "bottomLeftY: " << bottomLeftY << std::endl;
+			std::cout << "widthMap: " << widthMap << std::endl;
+			std::cout << "heightMap: " << widthMap << std::endl;
 		}
 	}
 	int getWidthMap()

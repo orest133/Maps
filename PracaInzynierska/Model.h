@@ -1,5 +1,4 @@
 #pragma once
-
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -234,5 +233,3 @@ GLint TextureFromFile( const char *path, string directory )
     
     return textureID;
 }
-
-
