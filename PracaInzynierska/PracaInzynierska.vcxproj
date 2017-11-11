@@ -76,18 +76,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Drone.cpp" />
     <ClCompile Include="getResolution.cpp" />
     <ClCompile Include="InputControl.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="dronePosition.cpp" />
+    <ClCompile Include="MapData.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Drone.h" />
     <ClInclude Include="getResolution.h" />
     <ClInclude Include="InputControl.h" />
     <ClInclude Include="Keyboard.h" />
+    <ClInclude Include="MapData.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="dronePosition.h" />
