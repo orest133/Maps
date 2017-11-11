@@ -1,10 +1,8 @@
 ﻿#pragma once
-//GDAL
-
 #include <gdal/gdal.h>
 #include <gdal/gdal_priv.h>
 #include <gdal/ogrsf_frmts.h>
-
+#include <iostream>
 class WorldMapCoordinates {//класа карти в форматі тіфф , включає в себе геодані  з карти і функції доступу до них 
 private:	int widthMap, heightMap;
 			float topLeftX, topLeftY, topRightX, bottomLeftY;

@@ -1,6 +1,6 @@
 ﻿#pragma once
 // Std. Includes
-#include <string>
+//#include <string>
 // GLEW
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -11,7 +11,6 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Texture.h"
-#include "WorldMapCoordinates.h"
 #include "InputControl.h"
 #include "dronePosition.h"
 #include "getResolution.h"
@@ -22,6 +21,8 @@
 // Other Libs
 #include "SOIL2/SOIL2.h"
 
+#include "Drone.h"
+#include "MapData.h"
 // Properties
 int SCREEN_WIDTH = 0, SCREEN_HEIGHT = 0;
 
@@ -38,11 +39,6 @@ void  drowMap(float x, float  y, glm::mat4 model, GLint modelLoc, int index) {
 
 int main()
 {
-	vector<WorldMapCoordinates> worldMapCoordinate;
-	worldMapCoordinate.push_back(WorldMapCoordinates("maps/M-34-080-C-d-1-1.tif"));
-	worldMapCoordinate.push_back(WorldMapCoordinates("maps/M-34-080-C-d-1-2.tif"));
-	worldMapCoordinate.push_back(WorldMapCoordinates("maps/M-34-080-C-d-1-3.tif"));
-	worldMapCoordinate.push_back(WorldMapCoordinates("maps/M-34-080-C-d-1-4.tif"));
 	// Init GLFWs
 	glfwInit();
 	// Set all the required options for GLFW
@@ -170,6 +166,10 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
 	glBindVertexArray(0);
 
+	MapData mapData;
+
+	//mapData.selectDataMap();
+	
 	// Load textures
 	GLuint cubeTexture = TextureLoading::LoadTexture("res/images/container2.png");
 
@@ -195,7 +195,7 @@ int main()
 
 	glm::mat4 projection = glm::perspective(InputControl::camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
 	// Load models
-	Model ourModel("res/models/airplane.obj");
+	Drone drone;
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -227,23 +227,13 @@ int main()
 		glBindVertexArray(cubeVAO);
 		model = glm::rotate(model, 1.59f, glm::vec3(1.0f, 0.0f, 0.0f));
 		int i = 0;
-		for (vector<WorldMapCoordinates>::iterator map = worldMapCoordinate.begin(); map != worldMapCoordinate.end(); ++map, i++)
+		for (vector<WorldMapCoordinates>::iterator map = mapData.worldMapCoordinate.begin(); map != mapData.worldMapCoordinate.end(); ++map, i++)
 			drowMap(map->getCoordinateX(), map->getCoordinateY(), model, modelLoc, textureMap[i]);
 		glBindVertexArray(0);
 		//кінець малювання карт
-
 		//початок малювання літачка 
-		float object_x = (dronePosition::pos_object_x - 692333) / (worldMapCoordinate[1].getTopRightX() - worldMapCoordinate[1].getTopLeftX());
-		float object_y = (210568 - dronePosition::pos_object_y) / (worldMapCoordinate[1].getBottomLeftY() - worldMapCoordinate[1].getTopLeftY());
-		glBindTexture(GL_TEXTURE_2D, cubeTexture);
-		glm::mat4  model2 = model;
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model2));
-		model2 = glm::translate(model2, glm::vec3(object_x, object_y, 0));
-		model2 = glm::scale(model2, glm::vec3(0.001f, 0.001f, 0.001f));
-		model2 = glm::rotate(model2, 1.59f, glm::vec3(-1.0f, 0.0f, 0.0f));
-		model2 = glm::rotate(model2, 1.59f, glm::vec3(0.0f, 1.0f, 0.0f));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model2));
-		ourModel.Draw(shader);
+		drone.draw(model,modelLoc);
+		drone.getDroneModel().Draw(shader);
 		//кінець малювання літака 
 
 		// початок малювання оточення 
