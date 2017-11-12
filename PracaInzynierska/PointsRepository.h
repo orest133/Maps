@@ -43,6 +43,7 @@ public:
 	unsigned int VBO, VAO;
 	void renderAllPoints();
 	void addPoint(CheckPoint point);
+	void removePoint(int point);
 	const int getVerticlesSizeForCube() const;
 	const float *getPointVerticles() const;
 	std::vector<CheckPoint> getPointsVector() const;
