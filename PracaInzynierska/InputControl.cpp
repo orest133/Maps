@@ -53,7 +53,8 @@ void InputControl::keyCallback(GLFWwindow* window,
 	{
 		dronePosition::pos_object_y += 20;
 	}
-	if (GLFW_KEY_5 == key) {
+	if (GLFW_KEY_5 == key && GLFW_RELEASE == action) {
+		std::cout << "----------------------------------------------------------------------------------------------------------" << std::endl;
 		std::cout << "[DRONE REAL INFO] " << std::endl << "X: " << dronePosition::pos_object_x << std::endl << "Y: " << dronePosition::pos_object_y << std::endl;
 		std::cout << "[DRONE OPENGL INFO] " << std::endl << "X: " << (dronePosition::pos_object_x - 692333) / MapData::scaleX << std::endl << "Y: " << (210568 - dronePosition::pos_object_y) / MapData::scaleY << std::endl;
 		std::cout << "[CAMERA INFO] " << std::endl << "X: " << Camera::cameraLastX << std::endl << "Y: " << Camera::cameraLastY << std::endl;
@@ -62,15 +63,7 @@ void InputControl::keyCallback(GLFWwindow* window,
 		std::cout << "[CAMERA POSITION Z] " << camera.GetPosition().z << std::endl;
 		//std::cout << "[CAMERA POSITION YAW] " << camera.GetYaw() << std::endl;
 		//std::cout << "[CAMERA POSITION PITCH] " << camera.GetPitch() << std::endl;
-
-	}
-	if (GLFW_KEY_SPACE == key) {
-		PointsRepository* pointsRepository = new PointsRepository();
-		CheckPoint point((dronePosition::pos_object_x - Setup::startingPointX) / MapData::scaleX,
-						0,
-			(Setup::startingPointY - dronePosition::pos_object_y) / MapData::scaleY);
-		pointsRepository->addPoint(point);
-		std::cout << "[POINTS AMOUNT] " << pointsRepository->getPointsVector().size() << std::endl;
+		std::cout << "----------------------------------------------------------------------------------------------------------" << std::endl;
 	}
 
 	if (key >= 0 && key < 1024)
@@ -86,7 +79,7 @@ void InputControl::keyCallback(GLFWwindow* window,
 	}
 }
 
-void InputControl::mouseCallback(GLFWwindow * window,
+void InputControl::mousePosCallback(GLFWwindow * window,
 								double xPos,
 								double yPos) {
 	GLfloat xOffset = xPos - Camera::cameraLastX;
@@ -101,3 +94,24 @@ void InputControl::mouseCallback(GLFWwindow * window,
 		InputControl::camera.ProcessMouseMovement(xOffset, yOffset);
 	}
 }
+
+void InputControl::mouseClickCallback(GLFWwindow * window,
+										int button,
+										int action,
+										int modifier) {
+	PointsRepository* pointsRepository = new PointsRepository();
+	if (GLFW_MOUSE_BUTTON_LEFT == button && GLFW_RELEASE == action) {
+		CheckPoint point((dronePosition::pos_object_x - Setup::startingPointX) / MapData::scaleX,
+			0,
+			(Setup::startingPointY - dronePosition::pos_object_y) / MapData::scaleY);
+		pointsRepository->addPoint(point);
+		std::cout << "[POINTS AMOUNT] " << pointsRepository->getPointsVector().size() << std::endl;
+	}
+	if (GLFW_MOUSE_BUTTON_RIGHT == button && GLFW_RELEASE == action) {
+		if (pointsRepository->getPointsVector().size() > 0) {
+			pointsRepository->removePoint(0);
+		}
+		std::cout << "[POINTS AMOUNT] " << pointsRepository->getPointsVector().size() << std::endl;
+	}
+}
+

@@ -59,9 +59,10 @@ int main() {
 	glfwGetFramebufferSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
 	// Set the required callback functions
 	glfwSetKeyCallback(window, &InputControl::keyCallback);
-	glfwSetCursorPosCallback(window, &InputControl::mouseCallback);
+	glfwSetCursorPosCallback(window, &InputControl::mousePosCallback);
+	glfwSetMouseButtonCallback(window, &InputControl::mouseClickCallback);
 	// GLFW Options
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
 	glewExperimental = GL_TRUE;
 	// Initialize GLEW to setup the OpenGL Function pointers
