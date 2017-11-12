@@ -1,6 +1,9 @@
 #pragma once
 #include <vector>
 #include "WorldMapCoordinates.h"
+
+#include <Windows.h>
+using namespace std;
 class MapData
 {
 public:

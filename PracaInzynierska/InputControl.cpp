@@ -66,9 +66,9 @@ void InputControl::keyCallback(GLFWwindow* window,
 	}
 	if (GLFW_KEY_SPACE == key) {
 		PointsRepository* pointsRepository = new PointsRepository();
-		CheckPoint point((dronePosition::pos_object_x - 692333) / MapData::scaleX,
+		CheckPoint point((dronePosition::pos_object_x - Setup::startingPointX) / MapData::scaleX,
 						0,
-			(210568 - dronePosition::pos_object_y) / MapData::scaleY);
+			(Setup::startingPointY - dronePosition::pos_object_y) / MapData::scaleY);
 		pointsRepository->addPoint(point);
 		std::cout << "[POINTS AMOUNT] " << pointsRepository->getPointsVector().size() << std::endl;
 	}
