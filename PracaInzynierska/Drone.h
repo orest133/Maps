@@ -2,6 +2,7 @@
 #include "dronePosition.h"
 #include "Model.h"
 #include "MapData.h"
+#include "Setup.h"
 class Drone
 {
 public:
@@ -26,10 +27,10 @@ private:
 
 	Model model;
 	float position_object_x() {
-		return  (dronePosition::pos_object_x - 692333) / MapData::scaleX;
+		return  (dronePosition::pos_object_x - Setup::startingPointX) / MapData::scaleX;
 	};
 	float  position_object_y() {
-		return  (210568 - dronePosition::pos_object_y) / MapData::scaleY;
+		return  (Setup::startingPointY - dronePosition::pos_object_y) / MapData::scaleY;
 	};
 	
 };

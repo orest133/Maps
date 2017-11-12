@@ -3,28 +3,48 @@
 float MapData::scaleX;
 float MapData::scaleY;
 
+
+
 MapData::MapData()
 {
 	loadDataMap();
 	selectDataMap();
-	scaleX= worldMapCoordinate[1].getTopRightX() - worldMapCoordinate[1].getTopLeftX();
+	scaleX = worldMapCoordinate[1].getTopRightX() - worldMapCoordinate[1].getTopLeftX();
 	scaleY = worldMapCoordinate[1].getBottomLeftY() - worldMapCoordinate[1].getTopLeftY();
 }
 
 void MapData::loadDataMap()
 {
-	worldMapCoordinateAll.push_back(WorldMapCoordinates("maps/M-34-080-C-d-1-1.tif"));
-   worldMapCoordinateAll.push_back(WorldMapCoordinates("maps/M-34-080-C-d-1-2.tif"));
-	worldMapCoordinateAll.push_back(WorldMapCoordinates("maps/M-34-080-C-d-1-3.tif"));
-	worldMapCoordinateAll.push_back(WorldMapCoordinates("maps/M-34-080-C-d-1-4.tif"));
+	vector<string> pathsToTifFile;
+	WIN32_FIND_DATA FindFileData;
+	HANDLE hf;
+	hf = FindFirstFile("maps/*.tif", &FindFileData);
+	if (hf != INVALID_HANDLE_VALUE)
+	{
+		do
+		{
+			pathsToTifFile.push_back(FindFileData.cFileName);
+		} while (FindNextFile(hf, &FindFileData) != 0);
+		FindClose(hf);
+	}
+
+	string pathTmp;
+	string prefix = "maps/";
+	for (vector<string>::iterator path = pathsToTifFile.begin(); path != pathsToTifFile.end(); ++path)
+	{
+		pathTmp = prefix + path->data();
+		const char* c = pathTmp.c_str();
+		worldMapCoordinateAll.push_back(WorldMapCoordinates(c));
+	}
 	
 }
 
 void MapData::selectDataMap()
 {
-	worldMapCoordinate.push_back(WorldMapCoordinates("maps/M-34-080-C-d-1-1.tif"));
-   worldMapCoordinate.push_back(WorldMapCoordinates("maps/M-34-080-C-d-1-2.tif"));
-	worldMapCoordinate.push_back(WorldMapCoordinates("maps/M-34-080-C-d-1-3.tif"));
-	worldMapCoordinate.push_back(WorldMapCoordinates("maps/M-34-080-C-d-1-4.tif"));
+	for (vector<WorldMapCoordinates>::iterator map = worldMapCoordinateAll.begin(); map != worldMapCoordinateAll.end(); ++map) {
+		if (worldMapCoordinate.size() < 1) {
+		}
+		worldMapCoordinate.push_back(*map);
+	}
 }
 

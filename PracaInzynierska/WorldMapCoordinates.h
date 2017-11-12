@@ -3,6 +3,7 @@
 #include <gdal/gdal_priv.h>
 #include <gdal/ogrsf_frmts.h>
 #include <iostream>
+#include "Setup.h"
 class WorldMapCoordinates {//класа карти в форматі тіфф , включає в себе геодані  з карти і функції доступу до них 
 private:	int widthMap, heightMap;
 			float topLeftX, topLeftY, topRightX, bottomLeftY;
@@ -15,7 +16,7 @@ private:	int widthMap, heightMap;
 public:
 	WorldMapCoordinates() {
 	}
-	WorldMapCoordinates(char patch[]) {
+	WorldMapCoordinates(const char patch[]) {
 		GDALAllRegister();
 		poDataset = (GDALDataset*)GDALOpen(patch, GA_ReadOnly);
 
@@ -53,8 +54,8 @@ public:
 		return heightMap;
 	}
    void convertGlobalPosToLocal() {
-	   coordinateX = (topLeftX - 692332) / (topRightX - topLeftX);
-	   coordinateY = (210567 - topLeftY) / (bottomLeftY - topLeftY);
+	   coordinateX = (topLeftX - Setup::startingPointX) / (topRightX - topLeftX);
+	   coordinateY = (Setup::startingPointY - topLeftY) / (bottomLeftY - topLeftY);
 		
 	}
 
