@@ -39,6 +39,7 @@ void  drowMap(float x, float  y, glm::mat4 model, GLint modelLoc, int index) {
 
 
 int main() {
+	Setup::loadDate();
 	// Init GLFWs
 	glfwInit();
 	// Set all the required options for GLFW
@@ -84,7 +85,7 @@ int main() {
 	GLfloat vertices[] = {
 		// Positions          // Colors           // Texture Coords
 		0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // x=0,y=0
-		0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, //x=0,y=-1
+		0.0f, -1.f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, //x=0,y=-1
 		-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, //x=-1,y=-1
 		0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // x=0,y=0
 		-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, //x=-1,y=-1
@@ -186,10 +187,12 @@ int main() {
 	faces.push_back("res/images/front.bmp");
 	faces.push_back("res/images/back.bmp");
 	vector<GLuint> textureMap;
-	textureMap.push_back(TextureLoading::LoadTexture("\maps/M-34-080-C-d-1-1.png"));
-	textureMap.push_back(TextureLoading::LoadTexture("\maps/M-34-080-C-d-1-2.png"));
-	textureMap.push_back(TextureLoading::LoadTexture("\maps/M-34-080-C-d-1-3.png"));
-	textureMap.push_back(TextureLoading::LoadTexture("\maps/M-34-080-C-d-1-4.png"));
+
+	for (vector<WorldMapCoordinates>::iterator map = mapData.worldMapCoordinate.begin(); map != mapData.worldMapCoordinate.end(); ++map) {
+		string path= map->getPatchTexture();
+		path=path.substr(0, path.find(".tif")) + ".png";
+		textureMap.push_back(TextureLoading::LoadTexture(path.c_str()));
+	}
 	GLuint cubemapTexture = TextureLoading::LoadCubemap(faces);
 	GLuint cubeTexture = TextureLoading::LoadTexture("res/images/triangle.png");
 	GLuint airplaneTexture = TextureLoading::LoadTexture("res/models/texture.png");
