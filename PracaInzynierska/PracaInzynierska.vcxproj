@@ -76,6 +76,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CheckPoint.cpp" />
     <ClCompile Include="Drone.cpp" />
     <ClCompile Include="getResolution.cpp" />
     <ClCompile Include="InputControl.cpp" />
@@ -83,10 +84,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="dronePosition.cpp" />
     <ClCompile Include="MapData.cpp" />
+    <ClCompile Include="PointsRepository.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CheckPoint.h" />
     <ClInclude Include="Drone.h" />
     <ClInclude Include="getResolution.h" />
     <ClInclude Include="InputControl.h" />
@@ -95,8 +98,13 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="dronePosition.h" />
+    <ClInclude Include="PointsRepository.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="WorldMapCoordinates.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PracaInzynierska.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,6 +2,8 @@
 #include "Camera.h"
 #include "Keyboard.h"
 #include "dronePosition.h"
+#include "PointsRepository.h"
+
 // GLFW
 #include <GLFW/glfw3.h>
 class InputControl {

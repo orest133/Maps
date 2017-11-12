@@ -14,6 +14,9 @@
 #include "InputControl.h"
 #include "dronePosition.h"
 #include "getResolution.h"
+#include "PointsRepository.h"
+#include "Drone.h"
+#include "MapData.h"
 // GLM Mathemtics
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -21,8 +24,6 @@
 // Other Libs
 #include "SOIL2/SOIL2.h"
 
-#include "Drone.h"
-#include "MapData.h"
 // Properties
 int SCREEN_WIDTH = 0, SCREEN_HEIGHT = 0;
 
@@ -37,8 +38,7 @@ void  drowMap(float x, float  y, glm::mat4 model, GLint modelLoc, int index) {
 }
 
 
-int main()
-{
+int main() {
 	// Init GLFWs
 	glfwInit();
 	// Set all the required options for GLFW
@@ -47,45 +47,39 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-	getResolution::GetDesktopResolution(SCREEN_HEIGHT, SCREEN_WIDTH);
 	// Create a GLFWwindow object that we can use for GLFW's functions
-	GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, "LearnOpenGL", nullptr, nullptr);
-	if (nullptr == window)
-	{
+	getResolution::GetDesktopResolution(SCREEN_HEIGHT, SCREEN_WIDTH);
+	GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH/1.5, SCREEN_HEIGHT/1.5, "LearnOpenGL", nullptr, nullptr);
+	if (nullptr == window) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
-
 		return EXIT_FAILURE;
 	}
 	glfwMakeContextCurrent(window);
 	glfwGetFramebufferSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
 	// Set the required callback functions
 	glfwSetKeyCallback(window, &InputControl::keyCallback);
-
 	glfwSetCursorPosCallback(window, &InputControl::mouseCallback);
 	// GLFW Options
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
 	glewExperimental = GL_TRUE;
 	// Initialize GLEW to setup the OpenGL Function pointers
-	if (GLEW_OK != glewInit())
-	{
+	if (GLEW_OK != glewInit()) {
 		std::cout << "Failed to initialize GLEW" << std::endl;
 		return EXIT_FAILURE;
 	}
-
 	// Define the viewport dimensions
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
 	// OpenGL options
 	glEnable(GL_DEPTH_TEST);
 
-	// Setup and compile our shaders
-	Shader shader("res/shaders/cube.vs", "res/shaders/cube.frag");
-	Shader skyboxShader("res/shaders/skybox.vs", "res/shaders/skybox.frag");
+	//Creating general objects
+	PointsRepository* pointsRepository = new PointsRepository();
+	MapData mapData;
+	Drone drone;
 
-
+	//CONSTANTS
 	GLfloat vertices[] = {
 		// Positions          // Colors           // Texture Coords
 		0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // x=0,y=0
@@ -140,7 +134,11 @@ int main()
 		-1.0f, -1.0f,  1.0f,
 		1.0f, -1.0f,  1.0f
 	};
+	//CONSTANTS END
 
+	// Setup and compile our shaders
+	Shader shader("res/shaders/cube.vs", "res/shaders/cube.frag");
+	Shader skyboxShader("res/shaders/skybox.vs", "res/shaders/skybox.frag");
 
 	// Setup cube VAO
 	GLuint cubeVAO, cubeVBO;
@@ -166,20 +164,18 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
 	glBindVertexArray(0);
 
-	MapData mapData;
+	// Setup points VAO
+	glGenVertexArrays(1, &pointsRepository->VAO);
+	glGenBuffers(1, &pointsRepository->VBO);
+	glBindVertexArray(pointsRepository->VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, pointsRepository->VBO);
+	glBufferData(GL_ARRAY_BUFFER, pointsRepository->getVerticlesSizeForCube(), pointsRepository->getPointVerticles(), GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
-	//mapData.selectDataMap();
-	
 	// Load textures
-	GLuint cubeTexture = TextureLoading::LoadTexture("res/images/container2.png");
-
-	vector<GLuint> textureMap;
-	textureMap.push_back(TextureLoading::LoadTexture("\maps/M-34-080-C-d-1-1.png"));
-	textureMap.push_back(TextureLoading::LoadTexture("\maps/M-34-080-C-d-1-2.png"));
-	textureMap.push_back(TextureLoading::LoadTexture("\maps/M-34-080-C-d-1-3.png"));
-	textureMap.push_back(TextureLoading::LoadTexture("\maps/M-34-080-C-d-1-4.png"));
-
-
 	// Cubemap (Skybox)
 	vector<const GLchar*> faces;
 	faces.push_back("res/images/right.bmp");
@@ -188,14 +184,15 @@ int main()
 	faces.push_back("res/images/bottom.bmp");
 	faces.push_back("res/images/front.bmp");
 	faces.push_back("res/images/back.bmp");
-
+	vector<GLuint> textureMap;
+	textureMap.push_back(TextureLoading::LoadTexture("\maps/M-34-080-C-d-1-1.png"));
+	textureMap.push_back(TextureLoading::LoadTexture("\maps/M-34-080-C-d-1-2.png"));
+	textureMap.push_back(TextureLoading::LoadTexture("\maps/M-34-080-C-d-1-3.png"));
+	textureMap.push_back(TextureLoading::LoadTexture("\maps/M-34-080-C-d-1-4.png"));
 	GLuint cubemapTexture = TextureLoading::LoadCubemap(faces);
-
+	GLuint cubeTexture = TextureLoading::LoadTexture("res/images/triangle.png");
 	GLuint airplaneTexture = TextureLoading::LoadTexture("res/models/texture.png");
 
-	glm::mat4 projection = glm::perspective(InputControl::camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
-	// Load models
-	Drone drone;
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -203,22 +200,24 @@ int main()
 		GLfloat currentFrame = glfwGetTime();
 		InputControl::deltaTime = currentFrame - InputControl::lastFrame;
 		InputControl::lastFrame = currentFrame;
+		InputControl::doMovement();
+		// Set variables
+		glm::mat4 model;
+		glm::mat4 view = InputControl::camera.GetViewMatrix();
+		glm::mat4 projection = glm::perspective(InputControl::camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
+		GLint modelLoc = glGetUniformLocation(shader.Program, "model");
+		GLint viewLoc = glGetUniformLocation(shader.Program, "view");
+		GLint projLoc = glGetUniformLocation(shader.Program, "projection");
 		// Check and call events
 		glfwPollEvents();
-		InputControl::doMovement();
 		// Clear the colorbuffer
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glm::mat4 model;
-		glm::mat4 view = InputControl::camera.GetViewMatrix();
 		// Draw our first triangle
 		shader.Use();
 		// Bind Textures using texture units
 		glActiveTexture(GL_TEXTURE0);
 		// Get the uniform locations
-		GLint modelLoc = glGetUniformLocation(shader.Program, "model");
-		GLint viewLoc = glGetUniformLocation(shader.Program, "view");
-		GLint projLoc = glGetUniformLocation(shader.Program, "projection");
 		// Pass the matrices to the shader
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -229,12 +228,28 @@ int main()
 		int i = 0;
 		for (vector<WorldMapCoordinates>::iterator map = mapData.worldMapCoordinate.begin(); map != mapData.worldMapCoordinate.end(); ++map, i++)
 			drowMap(map->getCoordinateX(), map->getCoordinateY(), model, modelLoc, textureMap[i]);
-		glBindVertexArray(0);
+		
 		//кінець малювання карт
 		//початок малювання літачка 
-		drone.draw(model,modelLoc);
+		drone.draw(model,modelLoc, airplaneTexture);
 		drone.getDroneModel().Draw(shader);
 		//кінець малювання літака 
+
+		//Points start
+		glBindVertexArray(pointsRepository->VAO);
+		for (unsigned int i = 0; i < pointsRepository->getPointsVector().size(); i++) {
+			glm::mat4 point;
+			glBindTexture(GL_TEXTURE_2D, cubeTexture);
+			point = glm::translate(point, glm::vec3(pointsRepository->getPointsVector().at(i).getX(),
+				pointsRepository->getPointsVector().at(i).getY(),
+				pointsRepository->getPointsVector().at(i).getZ()));
+			point = glm::scale(point, glm::vec3(0.03f, 0.03f, 0.03f));
+			point = glm::rotate(point, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(point));
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+		glBindVertexArray(0);
+		//Points end
 
 		// початок малювання оточення 
 		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content

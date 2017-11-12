@@ -7,22 +7,22 @@ float InputControl::lastFrame = 0.0f;
 
 void InputControl::doMovement() {
 	// Camera controls
-	if (Keyboard::keys[GLFW_KEY_W] || Keyboard::keys[GLFW_KEY_UP])
+	if (Keyboard::keys[GLFW_KEY_W])
 	{
 		InputControl::camera.ProcessKeyboard(FORWARD, deltaTime);
 	}
 
-	if (Keyboard::keys[GLFW_KEY_S] || Keyboard::keys[GLFW_KEY_DOWN])
+	if (Keyboard::keys[GLFW_KEY_S])
 	{
 		InputControl::camera.ProcessKeyboard(BACKWARD, deltaTime);
 	}
 
-	if (Keyboard::keys[GLFW_KEY_A] || Keyboard::keys[GLFW_KEY_LEFT])
+	if (Keyboard::keys[GLFW_KEY_A])
 	{
 		InputControl::camera.ProcessKeyboard(LEFT, deltaTime);
 	}
 
-	if (Keyboard::keys[GLFW_KEY_D] || Keyboard::keys[GLFW_KEY_RIGHT])
+	if (Keyboard::keys[GLFW_KEY_D])
 	{
 		InputControl::camera.ProcessKeyboard(RIGHT, deltaTime);
 	}
@@ -37,31 +37,40 @@ void InputControl::keyCallback(GLFWwindow* window,
 	{
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
-	if (GLFW_KEY_1 == key)
-	{
-		dronePosition::pos_object_x += 20;
-	}
-	if (GLFW_KEY_2 == key)
+	if (GLFW_KEY_UP == key)
 	{
 		dronePosition::pos_object_x -= 20;
 	}
-	if (GLFW_KEY_3 == key)
+	if (GLFW_KEY_DOWN == key)
 	{
-		dronePosition::pos_object_y += 20;
+		dronePosition::pos_object_x += 20;
 	}
-	if (GLFW_KEY_4 == key)
+	if (GLFW_KEY_RIGHT == key)
 	{
 		dronePosition::pos_object_y -= 20;
 	}
+	if (GLFW_KEY_LEFT == key)
+	{
+		dronePosition::pos_object_y += 20;
+	}
 	if (GLFW_KEY_5 == key) {
-		std::cout << "[DRONE INFO] " << std::endl << "X: " << dronePosition::pos_object_x << std::endl << "Y: " << dronePosition::pos_object_y << std::endl;
-		//std::cout << "[CAMERA INFO] " << std::endl << "X: " << Camera::cameraLastX << std::endl << "Y: " << Camera::cameraLastY << std::endl;
-		//std::cout << "[CAMERA POSITION X] " << camera.GetPosition().x << std::endl;
-		//std::cout << "[CAMERA POSITION Y] " << camera.GetPosition().y << std::endl;
-		//std::cout << "[CAMERA POSITION Z] " << camera.GetPosition().z << std::endl;
+		std::cout << "[DRONE REAL INFO] " << std::endl << "X: " << dronePosition::pos_object_x << std::endl << "Y: " << dronePosition::pos_object_y << std::endl;
+		std::cout << "[DRONE OPENGL INFO] " << std::endl << "X: " << (dronePosition::pos_object_x - 692333) / MapData::scaleX << std::endl << "Y: " << (210568 - dronePosition::pos_object_y) / MapData::scaleY << std::endl;
+		std::cout << "[CAMERA INFO] " << std::endl << "X: " << Camera::cameraLastX << std::endl << "Y: " << Camera::cameraLastY << std::endl;
+		std::cout << "[CAMERA POSITION X] " << camera.GetPosition().x << std::endl;
+		std::cout << "[CAMERA POSITION Y] " << camera.GetPosition().y << std::endl;
+		std::cout << "[CAMERA POSITION Z] " << camera.GetPosition().z << std::endl;
 		//std::cout << "[CAMERA POSITION YAW] " << camera.GetYaw() << std::endl;
 		//std::cout << "[CAMERA POSITION PITCH] " << camera.GetPitch() << std::endl;
 
+	}
+	if (GLFW_KEY_SPACE == key) {
+		PointsRepository* pointsRepository = new PointsRepository();
+		CheckPoint point((dronePosition::pos_object_x - 692333) / MapData::scaleX,
+						0,
+			(210568 - dronePosition::pos_object_y) / MapData::scaleY);
+		pointsRepository->addPoint(point);
+		std::cout << "[POINTS AMOUNT] " << pointsRepository->getPointsVector().size() << std::endl;
 	}
 
 	if (key >= 0 && key < 1024)
