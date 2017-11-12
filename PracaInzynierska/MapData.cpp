@@ -9,8 +9,8 @@ MapData::MapData()
 {
 	loadDataMap();
 	selectDataMap();
-	scaleX = worldMapCoordinate[1].getTopRightX() - worldMapCoordinate[1].getTopLeftX();
-	scaleY = worldMapCoordinate[1].getBottomLeftY() - worldMapCoordinate[1].getTopLeftY();
+	scaleX = worldMapCoordinate[0].getTopRightX() - worldMapCoordinate[0].getTopLeftX();
+	scaleY = worldMapCoordinate[0].getBottomLeftY() - worldMapCoordinate[0].getTopLeftY();
 }
 
 void MapData::loadDataMap()
@@ -42,9 +42,12 @@ void MapData::loadDataMap()
 void MapData::selectDataMap()
 {
 	for (vector<WorldMapCoordinates>::iterator map = worldMapCoordinateAll.begin(); map != worldMapCoordinateAll.end(); ++map) {
-		if (worldMapCoordinate.size() < 1) {
+		if (map->getTopLeftX() >= Setup::startingPointX && map->getTopLeftX() <= Setup::endPointX )
+			if( map->getTopLeftY() <= Setup::startingPointY && map->getTopLeftY() >= Setup::endPointY)
+		{
+			worldMapCoordinate.push_back(*map);
 		}
-		worldMapCoordinate.push_back(*map);
+		
 	}
 }
 

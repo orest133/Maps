@@ -12,6 +12,7 @@ private:	int widthMap, heightMap;
 			GDALDataset *poDataset;
 			float coordinateX;
 			float coordinateY;
+			string patchTexture;
 			
 public:
 	WorldMapCoordinates() {
@@ -44,6 +45,7 @@ public:
 			std::cout << "widthMap: " << widthMap << std::endl;
 			std::cout << "heightMap: " << widthMap << std::endl;
 		}
+		patchTexture = patch;
 	}
 	int getWidthMap()
 	{
@@ -62,6 +64,10 @@ public:
    float getCoordinateX()
    {
 	   return coordinateX;
+   }
+   string getPatchTexture()
+   {
+	   return patchTexture;
    }
    float getCoordinateY()
    {
