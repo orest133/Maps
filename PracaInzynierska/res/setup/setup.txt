@@ -1,0 +1,4 @@
+startingPointX = 690300
+startingPointY = 219460
+endPointX = 699866
+endPointY = 200500
