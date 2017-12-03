@@ -90,6 +90,7 @@
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Trajectory.cpp" />
     <ClCompile Include="TrajectoryPointsRepository.cpp" />
+    <ClCompile Include="Pointer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -110,6 +111,7 @@
     <ClInclude Include="Trajectory.h" />
     <ClInclude Include="TrajectoryPointsRepository.h" />
     <ClInclude Include="WorldMapCoordinates.h" />
+    <ClInclude Include="Pointer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PracaInzynierska.rc" />

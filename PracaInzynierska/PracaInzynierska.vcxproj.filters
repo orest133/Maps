@@ -60,6 +60,9 @@
     <ClCompile Include="TrajectoryPointsRepository.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Pointer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InputControl.h">
@@ -114,6 +117,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TrajectoryPointsRepository.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+        <ClInclude Include="Pointer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
