@@ -186,6 +186,16 @@ int main() {
 	glEnableVertexAttribArray(1);
 
 	// Load textures
+	// Setup points VAO
+	glGenVertexArrays(1, &pointsRepositoryTrajectory->VAO);
+	glGenBuffers(1, &pointsRepositoryTrajectory->VBO);
+	glBindVertexArray(pointsRepositoryTrajectory->VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, pointsRepositoryTrajectory->VBO);
+	glBufferData(GL_ARRAY_BUFFER, pointsRepositoryTrajectory->getVerticlesSizeForCube(), pointsRepositoryTrajectory->getPointVerticles(), GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 	// Cubemap (Skybox)
 	vector<const GLchar*> faces;
 	faces.push_back("res/images/right.bmp");
@@ -283,7 +293,7 @@ int main() {
 		//CameraPointer end
 		
 		//Points Trajectory start
-		glBindVertexArray(pointsRepository->VAO);
+		glBindVertexArray(pointsRepositoryTrajectory->VAO);
 		tmpTime = Trajectory::drow(tmpTime, model, modelLoc, textureTrajectory, pointsRepositoryTrajectory);
 		glBindVertexArray(0);
 		//Points Trajectory end 
