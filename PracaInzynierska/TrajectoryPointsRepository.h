@@ -1,11 +1,9 @@
 #pragma once
-#pragma once
 #include"CheckPoint.h"
 #include <vector>
 #include "MapData.h"
 class TrajectoryPointsRepository
 {
-
 private:
 	const static int VERTICLES_SIZE = 150;
 	const int VERTICLES_SIZE_FOR_CUBE = VERTICLES_SIZE * 4;
