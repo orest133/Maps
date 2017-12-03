@@ -106,17 +106,17 @@ void InputControl::keyCallback(GLFWwindow* window,
 void InputControl::mousePosCallback(GLFWwindow * window,
 								double xPos,
 								double yPos) {
-	//GLfloat xOffset = xPos - Camera::cameraLastX;
-	//GLfloat yOffset = Camera::cameraLastY - yPos;  // Reversed since y-coordinates go from bottom to left
-	//Camera::cameraLastX = xPos;
-	//Camera::cameraLastY = yPos;
-	//if (InputControl::firstMove) {
-	//	InputControl::camera.ProcessMouseMovement(0, 0);
-	//	InputControl::firstMove = false;
-	//}
-	//else {
-	//	InputControl::camera.ProcessMouseMovement(xOffset, yOffset);
-	//}
+	GLfloat xOffset = xPos - Camera::cameraLastX;
+	GLfloat yOffset = Camera::cameraLastY - yPos;  // Reversed since y-coordinates go from bottom to left
+	Camera::cameraLastX = xPos;
+	Camera::cameraLastY = yPos;
+	if (InputControl::firstMove) {
+		InputControl::camera.ProcessMouseMovement(0, 0);
+		InputControl::firstMove = false;
+	}
+	else {
+		InputControl::camera.ProcessMouseMovement(xOffset, yOffset);
+	}
 }
 
 void InputControl::mouseClickCallback(GLFWwindow * window,
