@@ -84,7 +84,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="dronePosition.cpp" />
     <ClCompile Include="MapData.cpp" />
-    <ClCompile Include="Pointer.cpp" />
     <ClCompile Include="PointsRepository.cpp" />
     <ClCompile Include="Setup.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -103,7 +102,6 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="dronePosition.h" />
-    <ClInclude Include="Pointer.h" />
     <ClInclude Include="PointsRepository.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Setup.h" />
