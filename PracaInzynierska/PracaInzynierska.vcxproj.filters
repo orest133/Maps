@@ -51,7 +51,6 @@
     <ClCompile Include="Setup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Pointer.cpp">
     <ClCompile Include="Trajectory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -108,7 +107,6 @@
     <ClInclude Include="Setup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Pointer.h">
     <ClInclude Include="Trajectory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
