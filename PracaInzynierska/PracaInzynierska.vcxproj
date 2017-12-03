@@ -56,7 +56,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32s.lib;glew32.lib;SOIL.lib;gdal_i.lib;ogrsf_frmts.lib;assimp-vc140-mt.lib;legacy_stdio_definitions.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32s.lib;glew32.lib;SOIL.lib;gdal_i.lib;ogrsf_frmts.lib;assimp-vc140-mt.lib;legacy_stdio_definitions.lib;shell32.lib;freetyped.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -87,6 +87,9 @@
     <ClCompile Include="PointsRepository.cpp" />
     <ClCompile Include="Setup.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Text.cpp" />
+    <ClCompile Include="Trajectory.cpp" />
+    <ClCompile Include="TrajectoryPointsRepository.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -102,7 +105,10 @@
     <ClInclude Include="PointsRepository.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Setup.h" />
+    <ClInclude Include="Text.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Trajectory.h" />
+    <ClInclude Include="TrajectoryPointsRepository.h" />
     <ClInclude Include="WorldMapCoordinates.h" />
   </ItemGroup>
   <ItemGroup>

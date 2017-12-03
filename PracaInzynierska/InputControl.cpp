@@ -4,6 +4,7 @@ Camera InputControl::camera = Camera(glm::vec3(0.28f, 1.05f, -0.12f));
 bool InputControl::firstMove = true;
 float InputControl::deltaTime = 0.0f;
 float InputControl::lastFrame = 0.0f;
+//ofstream InputControl::myfile;
 
 void InputControl::doMovement() {
 	// Camera controls
@@ -33,25 +34,48 @@ void InputControl::keyCallback(GLFWwindow* window,
 								int scancode,
 								int action,
 								int mode) {
+	
+	
+	
+	//if (myfile.is_open())
+//	myfile  << "[DRONE REAL INFO] " << std::endl << "X: " << dronePosition::pos_object_x << std::endl << "Y: " << dronePosition::pos_object_y << std::endl << "H: " << dronePosition::height << std::endl << "D: " << dronePosition::direction << std::endl;
+	//else myfile.open("res/setup/newDataDronePosition2.txt");
+	std::cout << "[DRONE REAL INFO] " << std::endl << "X: " << dronePosition::pos_object_x << std::endl << "Y: " << dronePosition::pos_object_y << std::endl << "H: " << dronePosition::height << std::endl << "D: " << dronePosition::direction << std::endl;
 	if (GLFW_KEY_ESCAPE == key && GLFW_PRESS == action)
 	{
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
 	if (GLFW_KEY_UP == key)
-	{
-		dronePosition::pos_object_x -= 20;
+	{	
+		dronePosition::pos_object_x-= 1;
 	}
 	if (GLFW_KEY_DOWN == key)
 	{
-		dronePosition::pos_object_x += 20;
+		dronePosition::pos_object_x += 1;
 	}
 	if (GLFW_KEY_RIGHT == key)
 	{
-		dronePosition::pos_object_y -= 20;
+		dronePosition::pos_object_y -= 1;
 	}
 	if (GLFW_KEY_LEFT == key)
 	{
-		dronePosition::pos_object_y += 20;
+		dronePosition::pos_object_y += 1;
+	}
+	if (GLFW_KEY_KP_8 == key)
+	{
+		dronePosition::height += 0.0005;
+	}
+	if (GLFW_KEY_KP_2== key)
+	{
+		dronePosition::height -= 0.0005;
+	}
+	if (GLFW_KEY_KP_4== key)
+	{
+		dronePosition::direction -= 0.01;
+	}
+	if (GLFW_KEY_KP_6 == key)
+	{
+		dronePosition::direction += 0.01;
 	}
 	if (GLFW_KEY_5 == key && GLFW_RELEASE == action) {
 		std::cout << "----------------------------------------------------------------------------------------------------------" << std::endl;
@@ -61,8 +85,8 @@ void InputControl::keyCallback(GLFWwindow* window,
 		std::cout << "[CAMERA POSITION X] " << camera.GetPosition().x << std::endl;
 		std::cout << "[CAMERA POSITION Y] " << camera.GetPosition().y << std::endl;
 		std::cout << "[CAMERA POSITION Z] " << camera.GetPosition().z << std::endl;
-		//std::cout << "[CAMERA POSITION YAW] " << camera.GetYaw() << std::endl;
-		//std::cout << "[CAMERA POSITION PITCH] " << camera.GetPitch() << std::endl;
+		std::cout << "[CAMERA POSITION YAW] " << camera.GetYaw() << std::endl;
+		std::cout << "[CAMERA POSITION PITCH] " << camera.GetPitch() << std::endl;
 		std::cout << "----------------------------------------------------------------------------------------------------------" << std::endl;
 	}
 

@@ -2,7 +2,9 @@
 class dronePosition
 {
 public:
-	static double pos_object_x;
-	static double pos_object_y;
+	static float pos_object_x;
+	static float pos_object_y;
+	static float  height ;
+	static float  direction;
 };
 
