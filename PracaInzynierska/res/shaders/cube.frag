@@ -9,6 +9,6 @@ uniform sampler2D texture1;
 
 void main()
 {
-    // Linearly interpolate between both textures (second texture is only slightly combined)
+
     color = texture(texture1, TexCoord);
 }

@@ -3,16 +3,19 @@
 #include "Keyboard.h"
 #include "dronePosition.h"
 #include "PointsRepository.h"
-
+#include <iostream>
+#include <fstream>
 // GLFW
 #include <GLFW/glfw3.h>
 class InputControl {
 public:
+	
 	static Camera camera;
 	static bool firstMove;
 	static float deltaTime;
 	static float lastFrame;
 	static void doMovement();
+//	static ofstream myfile;
 	static void keyCallback(GLFWwindow* window,
 							int key,
 							int scancode,
