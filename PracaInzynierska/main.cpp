@@ -1,5 +1,7 @@
 ﻿#pragma once
 // Std. Includes
+#include <ft2build.h>
+#include FT_FREETYPE_H
 //#include <string>
 // GLEW
 #define GLEW_STATIC
@@ -15,15 +17,19 @@
 #include "dronePosition.h"
 #include "getResolution.h"
 #include "PointsRepository.h"
+#include "TrajectoryPointsRepository.h"
 #include "Drone.h"
 #include "MapData.h"
 #include "Pointer.h"
+#include "Trajectory.h"
 // GLM Mathemtics
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 // Other Libs
 #include "SOIL2/SOIL2.h"
+
+#include "Text.h"
 
 // Properties
 int SCREEN_WIDTH = 0, SCREEN_HEIGHT = 0;
@@ -33,7 +39,7 @@ float static central_position_y = 212567;//Позиція вписана опе�
 
 void  drowMap(float x, float  y, glm::mat4 model, GLint modelLoc, int index) {
 	glBindTexture(GL_TEXTURE_2D, index);
-	model = glm::translate(model, glm::vec3(x, y, 0));
+	model = glm::translate(model, glm::vec3(x, y, 0.0));
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
@@ -50,7 +56,7 @@ int main() {
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	// Create a GLFWwindow object that we can use for GLFW's functions
 	getResolution::GetDesktopResolution(SCREEN_HEIGHT, SCREEN_WIDTH);
-	GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH/1.5, SCREEN_HEIGHT/1.5, "LearnOpenGL", nullptr, nullptr);
+	GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "LearnOpenGL", nullptr, nullptr);
 	if (nullptr == window) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -81,7 +87,7 @@ int main() {
 	Pointer* pointer = new Pointer();
 	MapData mapData;
 	Drone drone;
-
+	TrajectoryPointsRepository *pointsRepositoryTrajectory = new TrajectoryPointsRepository();
 	//CONSTANTS
 	GLfloat vertices[] = {
 		// Positions          // Colors           // Texture Coords
@@ -141,8 +147,9 @@ int main() {
 
 	// Setup and compile our shaders
 	Shader shader("res/shaders/cube.vs", "res/shaders/cube.frag");
+	Shader airplaneShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 	Shader skyboxShader("res/shaders/skybox.vs", "res/shaders/skybox.frag");
-
+	Shader *shaderText= new Shader("res/shaders/text.vs", "res/shaders/text.frag");
 	// Setup cube VAO
 	GLuint cubeVAO, cubeVBO;
 	glGenVertexArrays(1, &cubeVAO);
@@ -190,17 +197,27 @@ int main() {
 	vector<GLuint> textureMap;
 
 	for (vector<WorldMapCoordinates>::iterator map = mapData.worldMapCoordinate.begin(); map != mapData.worldMapCoordinate.end(); ++map) {
-		string path= map->getPatchTexture();
+		string path=map->getPatchTexture();
 		path=path.substr(0, path.find(".tif")) + ".png";
 		textureMap.push_back(TextureLoading::LoadTexture(path.c_str()));
-	}
+		}
 	GLuint cubemapTexture = TextureLoading::LoadCubemap(faces);
 	GLuint cubeTexture = TextureLoading::LoadTexture("res/images/triangle.png");
+	GLuint textureTrajectory = TextureLoading::LoadTexture("res/images/textureTrajectory.jpg");
 	GLuint airplaneTexture = TextureLoading::LoadTexture("res/models/texture.png");
-
+	float j = 0;
 	// Game loop
+	double tmpTime = glfwGetTime();
+	double tmpTime2 = glfwGetTime();
+	
+	Text text;
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	text.loadTexture();
 	while (!glfwWindowShouldClose(window))
 	{
+		tmpTime2= drone.quantifyPosition(tmpTime2);
+		
+		
 		// Set frame time
 		GLfloat currentFrame = glfwGetTime();
 		InputControl::deltaTime = currentFrame - InputControl::lastFrame;
@@ -235,10 +252,6 @@ int main() {
 			drowMap(map->getCoordinateX(), map->getCoordinateY(), model, modelLoc, textureMap[i]);
 		
 		//кінець малювання карт
-		//початок малювання літачка 
-		drone.draw(model,modelLoc, airplaneTexture);
-		drone.getDroneModel().Draw(shader);
-		//кінець малювання літака 
 
 		//Points start
 		glBindVertexArray(pointsRepository->VAO);
@@ -248,7 +261,7 @@ int main() {
 			point = glm::translate(point, glm::vec3(pointsRepository->getPointsVector().at(i).getX(),
 				pointsRepository->getPointsVector().at(i).getY(),
 				pointsRepository->getPointsVector().at(i).getZ()));
-			point = glm::scale(point, glm::vec3(0.03f, 0.03f, 0.03f));
+				point = glm::scale(point, glm::vec3(0.03f, 0.03f, 0.03f));
 			point = glm::rotate(point, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(point));
 			glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -268,6 +281,20 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 0, 36);		
 		glBindVertexArray(0);
 		//CameraPointer end
+		
+		//Points Trajectory start
+		glBindVertexArray(pointsRepository->VAO);
+		tmpTime = Trajectory::drow(tmpTime, model, modelLoc, textureTrajectory, pointsRepositoryTrajectory);
+		glBindVertexArray(0);
+		//Points Trajectory end 
+
+		//початок малювання літачка 
+		airplaneShader.Use();
+		glUniformMatrix4fv(glGetUniformLocation(airplaneShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(glGetUniformLocation(airplaneShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		drone.draw(model, modelLoc, airplaneTexture);
+		drone.getDroneModel().Draw(shader);
+		//кінець малювання літака 
 
 		// початок малювання оточення 
 		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content
@@ -282,7 +309,13 @@ int main() {
 		glBindVertexArray(0);
 		glDepthFunc(GL_LESS); // Set depth function back to default
 	   // кінець малювання оточення 
-
+		
+	
+		text.RenderText(shaderText, "Position X: " + to_string((int)dronePosition::pos_object_x), 0.0f, 10.0f, 0.5f, glm::vec3(20.0f, 0.8f, 0.2f));
+		text.RenderText(shaderText, "Position Y: " + to_string((int)dronePosition::pos_object_y), 0.0f, 30.0f, 0.5f, glm::vec3(40.0f, 0.8f, 0.2f));
+		text.RenderText(shaderText, "Direction: " + to_string((int)(dronePosition::direction*100)), 0.0f, 50.0f, 0.5f, glm::vec3(50.0f, 0.8f, 0.2f));
+		text.RenderText(shaderText, "Height Y: " + to_string((int)(dronePosition::height*100)), 0.0f, 70.0f, 0.5f, glm::vec3(60.0f, 0.8f, 0.2f));
+		text.RenderText(shaderText, " ", 0.5f, 0.0f, 0.5f, glm::vec3(20.0f, 0.8f, 0.2f));
 		// Swap the buffers
 		glfwSwapBuffers(window);
 	}
