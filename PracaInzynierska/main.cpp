@@ -20,6 +20,7 @@
 #include "TrajectoryPointsRepository.h"
 #include "Drone.h"
 #include "MapData.h"
+#include "Pointer.h"
 #include "Trajectory.h"
 // GLM Mathemtics
 #include <glm/glm.hpp>
@@ -42,7 +43,6 @@ void  drowMap(float x, float  y, glm::mat4 model, GLint modelLoc, int index) {
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
-
 
 int main() {
 	Setup::loadDate();
@@ -84,6 +84,7 @@ int main() {
 
 	//Creating general objects
 	PointsRepository* pointsRepository = new PointsRepository();
+	Pointer* pointer = new Pointer();
 	MapData mapData;
 	Drone drone;
 	TrajectoryPointsRepository *pointsRepositoryTrajectory = new TrajectoryPointsRepository();
@@ -267,6 +268,19 @@ int main() {
 		}
 		glBindVertexArray(0);
 		//Points end
+		//CameraPointer start
+		glBindVertexArray(pointsRepository->VAO);
+		glm::mat4 point;
+		glBindTexture(GL_TEXTURE_2D, cubeTexture);
+		point = glm::translate(point, glm::vec3(InputControl::camera.GetPosition().x,
+			0.5,
+			InputControl::camera.GetPosition().z));
+		point = glm::scale(point, glm::vec3(0.03f, 0.03f, 0.03f));
+		point = glm::rotate(point, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(point));
+		glDrawArrays(GL_TRIANGLES, 0, 36);		
+		glBindVertexArray(0);
+		//CameraPointer end
 		
 		//Points Trajectory start
 		glBindVertexArray(pointsRepository->VAO);

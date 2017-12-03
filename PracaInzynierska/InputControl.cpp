@@ -106,17 +106,17 @@ void InputControl::keyCallback(GLFWwindow* window,
 void InputControl::mousePosCallback(GLFWwindow * window,
 								double xPos,
 								double yPos) {
-	GLfloat xOffset = xPos - Camera::cameraLastX;
-	GLfloat yOffset = Camera::cameraLastY - yPos;  // Reversed since y-coordinates go from bottom to left
-	Camera::cameraLastX = xPos;
-	Camera::cameraLastY = yPos;
-	if (InputControl::firstMove) {
-		InputControl::camera.ProcessMouseMovement(0, 0);
-		InputControl::firstMove = false;
-	}
-	else {
-		InputControl::camera.ProcessMouseMovement(xOffset, yOffset);
-	}
+	//GLfloat xOffset = xPos - Camera::cameraLastX;
+	//GLfloat yOffset = Camera::cameraLastY - yPos;  // Reversed since y-coordinates go from bottom to left
+	//Camera::cameraLastX = xPos;
+	//Camera::cameraLastY = yPos;
+	//if (InputControl::firstMove) {
+	//	InputControl::camera.ProcessMouseMovement(0, 0);
+	//	InputControl::firstMove = false;
+	//}
+	//else {
+	//	InputControl::camera.ProcessMouseMovement(xOffset, yOffset);
+	//}
 }
 
 void InputControl::mouseClickCallback(GLFWwindow * window,
@@ -128,7 +128,12 @@ void InputControl::mouseClickCallback(GLFWwindow * window,
 		CheckPoint point((dronePosition::pos_object_x - Setup::startingPointX) / MapData::scaleX,
 			0,
 			(Setup::startingPointY - dronePosition::pos_object_y) / MapData::scaleY);
-		pointsRepository->addPoint(point);
+		CheckPoint point2(InputControl::camera.GetPosition().x,
+			0,
+			InputControl::camera.GetPosition().z);
+
+		//pointsRepository->addPoint(point);
+		pointsRepository->addPoint(point2);
 		std::cout << "[POINTS AMOUNT] " << pointsRepository->getPointsVector().size() << std::endl;
 	}
 	if (GLFW_MOUSE_BUTTON_RIGHT == button && GLFW_RELEASE == action) {
