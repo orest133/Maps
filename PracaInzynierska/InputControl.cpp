@@ -129,7 +129,7 @@ void InputControl::mouseClickCallback(GLFWwindow * window,
 			0,
 			(Setup::startingPointY - dronePosition::pos_object_y) / MapData::scaleY);
 		CheckPoint point2(InputControl::camera.GetPosition().x,
-			0,
+			0.3f,
 			InputControl::camera.GetPosition().z);
 
 		//pointsRepository->addPoint(point);

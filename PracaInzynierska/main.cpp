@@ -42,6 +42,28 @@ void  drowMap(float x, float  y, glm::mat4 model, GLint modelLoc, int index) {
 	model = glm::translate(model, glm::vec3(x, y, 0.0));
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void  drowLine(glm::mat4 model, GLint modelLoc, int pointsCount, GLfloat *lineVertices, int lineVerticesSize) {
+	// Create Vertex Array Object
+	GLuint vao;
+	GLuint vbo;
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), &lineVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, lineVerticesSize * sizeof(GLfloat), lineVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
+	glBindVertexArray(0);
+
+	glBindVertexArray(vao);
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	//if(sizeof(lineVertices) != 0)
+	glDrawArrays(GL_LINE_STRIP, 0, pointsCount);
+	glBindVertexArray(0);
 }
 
 int main() {
@@ -56,7 +78,7 @@ int main() {
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	// Create a GLFWwindow object that we can use for GLFW's functions
 	getResolution::GetDesktopResolution(SCREEN_HEIGHT, SCREEN_WIDTH);
-	GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "LearnOpenGL", nullptr, nullptr);
+	GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH/1.7, SCREEN_HEIGHT/ 1.7, "LearnOpenGL", nullptr, nullptr);
 	if (nullptr == window) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -69,7 +91,7 @@ int main() {
 	glfwSetCursorPosCallback(window, &InputControl::mousePosCallback);
 	glfwSetMouseButtonCallback(window, &InputControl::mouseClickCallback);
 	// GLFW Options
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
 	glewExperimental = GL_TRUE;
 	// Initialize GLEW to setup the OpenGL Function pointers
@@ -149,6 +171,7 @@ int main() {
 	Shader shader("res/shaders/cube.vs", "res/shaders/cube.frag");
 	Shader airplaneShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 	Shader skyboxShader("res/shaders/skybox.vs", "res/shaders/skybox.frag");
+	Shader linesShader("res/shaders/lines.vs", "res/shaders/lines.frag");
 	Shader *shaderText= new Shader("res/shaders/text.vs", "res/shaders/text.frag");
 	// Setup cube VAO
 	GLuint cubeVAO, cubeVBO;
@@ -185,7 +208,6 @@ int main() {
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	// Load textures
 	// Setup points VAO
 	glGenVertexArrays(1, &pointsRepositoryTrajectory->VAO);
 	glGenBuffers(1, &pointsRepositoryTrajectory->VBO);
@@ -198,6 +220,7 @@ int main() {
 	glEnableVertexAttribArray(1);
 	// Cubemap (Skybox)
 	vector<const GLchar*> faces;
+	// Load textures
 	faces.push_back("res/images/right.bmp");
 	faces.push_back("res/images/left.bmp");
 	faces.push_back("res/images/top.bmp");
@@ -256,39 +279,50 @@ int main() {
 
 		//Початок малювання карт
 		glBindVertexArray(cubeVAO);
-		model = glm::rotate(model, 1.59f, glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, 1.5708f, glm::vec3(1.0f, 0.0f, 0.0f));
 		int i = 0;
 		for (vector<WorldMapCoordinates>::iterator map = mapData.worldMapCoordinate.begin(); map != mapData.worldMapCoordinate.end(); ++map, i++)
 			drowMap(map->getCoordinateX(), map->getCoordinateY(), model, modelLoc, textureMap[i]);
-		
+		glBindVertexArray(0);
 		//кінець малювання карт
 
 		//Points start
 		glBindVertexArray(pointsRepository->VAO);
-		for (unsigned int i = 0; i < pointsRepository->getPointsVector().size(); i++) {
+		int pointsVectorSize = pointsRepository->getPointsVector().size();
+		int arraySize = pointsVectorSize * 3;
+		GLfloat *lineVertices = new GLfloat[arraySize]();
+		for (unsigned int i = 0; i < pointsVectorSize; i++) {
 			glm::mat4 point;
 			glBindTexture(GL_TEXTURE_2D, cubeTexture);
 			point = glm::translate(point, glm::vec3(pointsRepository->getPointsVector().at(i).getX(),
 				pointsRepository->getPointsVector().at(i).getY(),
 				pointsRepository->getPointsVector().at(i).getZ()));
-				point = glm::scale(point, glm::vec3(0.03f, 0.03f, 0.03f));
+			point = glm::scale(point, glm::vec3(0.05f, 0.05f, 0.05f));
 			point = glm::rotate(point, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(point));
 			glDrawArrays(GL_TRIANGLES, 0, 36);
+			int j = i*3;
+			lineVertices[j] = pointsRepository->getPointsVector().at(i).getX();
+			lineVertices[j + 1] = pointsRepository->getPointsVector().at(i).getZ();
+			lineVertices[j + 2] = -pointsRepository->getPointsVector().at(i).getY();
 		}
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindVertexArray(0);
 		//Points end
+		drowLine(model, modelLoc, pointsVectorSize, lineVertices, arraySize);
+		delete[] lineVertices;
 		//CameraPointer start
 		glBindVertexArray(pointsRepository->VAO);
 		glm::mat4 point;
 		glBindTexture(GL_TEXTURE_2D, cubeTexture);
 		point = glm::translate(point, glm::vec3(InputControl::camera.GetPosition().x,
-			0.5,
+			0.5f,
 			InputControl::camera.GetPosition().z));
 		point = glm::scale(point, glm::vec3(0.03f, 0.03f, 0.03f));
 		point = glm::rotate(point, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(point));
 		glDrawArrays(GL_TRIANGLES, 0, 36);		
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindVertexArray(0);
 		//CameraPointer end
 		
@@ -305,7 +339,7 @@ int main() {
 		drone.draw(model, modelLoc, airplaneTexture);
 		drone.getDroneModel().Draw(shader);
 		//кінець малювання літака 
-
+		
 		// початок малювання оточення 
 		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content
 		skyboxShader.Use();
@@ -316,10 +350,10 @@ int main() {
 		glBindVertexArray(skyboxVAO);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindVertexArray(0);
 		glDepthFunc(GL_LESS); // Set depth function back to default
 	   // кінець малювання оточення 
-		
 	
 		text.RenderText(shaderText, "Position X: " + to_string((int)dronePosition::pos_object_x), 0.0f, 10.0f, 0.5f, glm::vec3(20.0f, 0.8f, 0.2f));
 		text.RenderText(shaderText, "Position Y: " + to_string((int)dronePosition::pos_object_y), 0.0f, 30.0f, 0.5f, glm::vec3(40.0f, 0.8f, 0.2f));
