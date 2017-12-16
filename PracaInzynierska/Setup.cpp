@@ -30,7 +30,7 @@ void Setup::loadDate()
 	endPointX= (float)atof(dataFromSetup[2].substr(dataFromSetup[2].find('=') + 1, dataFromSetup[2].length()).c_str());
 	endPointY= (float)atof(dataFromSetup[3].substr(dataFromSetup[3].find('=') + 1, dataFromSetup[3].length()).c_str());
 
-	in.open("res/setup/dataDronePosition.txt");
+	in.open("res/setup/dataDronePosition2.txt");
 	if (!in) {
 		cout << "Cannot open input file.\n";
 	}
