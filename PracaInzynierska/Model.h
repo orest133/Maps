@@ -14,7 +14,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-
+#include "Shader.h"
 #include "Mesh.h"
 
 using namespace std;
@@ -30,7 +30,8 @@ public:
     {
         this->loadModel( path );
     }
-    
+	~Model() {
+	}
     // Draws the model, and thus all its meshes
     void Draw( Shader shader )
     {
