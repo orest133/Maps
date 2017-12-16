@@ -17,7 +17,7 @@ public:
 			float direction = direction_object();
 			glBindTexture(GL_TEXTURE_2D, airplaneTexture);
 			model = glm::translate(model, glm::vec3(object_x, object_y, -height));
-			model = glm::scale(model, glm::vec3(0.007f, 0.007f, 0.007f));
+			model = glm::scale(model, glm::vec3(0.005f, 0.005f, 0.005f));
 			model = glm::rotate(model, 1.59f, glm::vec3(-1.0f, 0.0f, 0.0f));
 			model = glm::rotate(model, direction, glm::vec3(0.0f, 1.0f, 0.0f));
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
