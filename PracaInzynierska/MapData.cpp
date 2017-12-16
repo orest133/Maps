@@ -51,3 +51,9 @@ void MapData::selectDataMap()
 	}
 }
 
+void MapData::drowMap(float x, float  y, glm::mat4 model, GLint modelLoc, int index) {
+	glBindTexture(GL_TEXTURE_2D, index);
+	model = glm::translate(model, glm::vec3(x, y, 0.0));
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
