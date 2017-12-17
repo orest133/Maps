@@ -22,38 +22,27 @@
 #include "MapData.h"
 #include "Pointer.h"
 #include "Trajectory.h"
-// GLM Mathemtics
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-// Other Libs
+
 #include "SOIL2/SOIL2.h"
 
 #include "Text.h"
 
-// Properties
+
 int SCREEN_WIDTH = 0, SCREEN_HEIGHT = 0;
 
-float static central_poxition_x = 689032;//Позиція вписана оператором ,точка відліку 
-float static central_position_y = 212567;//Позиція вписана оператором ,точка відліку 
-
-void  drowMap(float x, float  y, glm::mat4 model, GLint modelLoc, int index) {
-	glBindTexture(GL_TEXTURE_2D, index);
-	model = glm::translate(model, glm::vec3(x, y, 0.0));
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindTexture(GL_TEXTURE_2D, 0);
-}
 
 void  drowLine(glm::mat4 model, GLint modelLoc, int pointsCount, GLfloat *lineVertices, int lineVerticesSize) {
-	// Create Vertex Array Object
 	GLuint vao;
 	GLuint vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), &lineVertices, GL_STATIC_DRAW);
+
 	glBufferData(GL_ARRAY_BUFFER, lineVerticesSize * sizeof(GLfloat), lineVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
@@ -61,24 +50,22 @@ void  drowLine(glm::mat4 model, GLint modelLoc, int pointsCount, GLfloat *lineVe
 
 	glBindVertexArray(vao);
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-	//if(sizeof(lineVertices) != 0)
 	glDrawArrays(GL_LINE_STRIP, 0, pointsCount);
 	glBindVertexArray(0);
 }
 
 int main() {
 	Setup::loadDate();
-	// Init GLFWs
+
 	glfwInit();
-	// Set all the required options for GLFW
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-	// Create a GLFWwindow object that we can use for GLFW's functions
+
 	getResolution::GetDesktopResolution(SCREEN_HEIGHT, SCREEN_WIDTH);
-	GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH/1.7, SCREEN_HEIGHT/ 1.7, "LearnOpenGL", nullptr, nullptr);
+	GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH/1.7, SCREEN_HEIGHT/ 1.7, "Ivan Sopyliuk", nullptr, nullptr);
 	if (nullptr == window) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -86,31 +73,26 @@ int main() {
 	}
 	glfwMakeContextCurrent(window);
 	glfwGetFramebufferSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
-	// Set the required callback functions
+
 	glfwSetKeyCallback(window, &InputControl::keyCallback);
 	glfwSetCursorPosCallback(window, &InputControl::mousePosCallback);
 	glfwSetMouseButtonCallback(window, &InputControl::mouseClickCallback);
-	// GLFW Options
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
 	glewExperimental = GL_TRUE;
-	// Initialize GLEW to setup the OpenGL Function pointers
+
 	if (GLEW_OK != glewInit()) {
 		std::cout << "Failed to initialize GLEW" << std::endl;
 		return EXIT_FAILURE;
 	}
-	// Define the viewport dimensions
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-	// OpenGL options
 	glEnable(GL_DEPTH_TEST);
 
-	//Creating general objects
 	PointsRepository* pointsRepository = new PointsRepository();
 	Pointer* pointer = new Pointer();
 	MapData mapData;
 	Drone drone;
 	TrajectoryPointsRepository *pointsRepositoryTrajectory = new TrajectoryPointsRepository();
-	//CONSTANTS
+
 	GLfloat vertices[] = {
 		// Positions          // Colors           // Texture Coords
 		0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // x=0,y=0
@@ -165,15 +147,13 @@ int main() {
 		-1.0f, -1.0f,  1.0f,
 		1.0f, -1.0f,  1.0f
 	};
-	//CONSTANTS END
-
-	// Setup and compile our shaders
+	
 	Shader shader("res/shaders/cube.vs", "res/shaders/cube.frag");
 	Shader airplaneShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 	Shader skyboxShader("res/shaders/skybox.vs", "res/shaders/skybox.frag");
 	Shader linesShader("res/shaders/lines.vs", "res/shaders/lines.frag");
 	Shader *shaderText= new Shader("res/shaders/text.vs", "res/shaders/text.frag");
-	// Setup cube VAO
+
 	GLuint cubeVAO, cubeVBO;
 	glGenVertexArrays(1, &cubeVAO);
 	glGenBuffers(1, &cubeVBO);
@@ -239,7 +219,7 @@ int main() {
 	GLuint textureTrajectory = TextureLoading::LoadTexture("res/images/textureTrajectory.jpg");
 	GLuint airplaneTexture = TextureLoading::LoadTexture("res/models/texture.png");
 	float j = 0;
-	// Game loop
+
 	double tmpTime = glfwGetTime();
 	double tmpTime2 = glfwGetTime();
 	
@@ -249,8 +229,7 @@ int main() {
 	while (!glfwWindowShouldClose(window))
 	{
 		tmpTime2= drone.quantifyPosition(tmpTime2);
-		
-		
+
 		// Set frame time
 		GLfloat currentFrame = glfwGetTime();
 		InputControl::deltaTime = currentFrame - InputControl::lastFrame;
@@ -268,24 +247,20 @@ int main() {
 		// Clear the colorbuffer
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		// Draw our first triangle
 		shader.Use();
-		// Bind Textures using texture units
 		glActiveTexture(GL_TEXTURE0);
-		// Get the uniform locations
-		// Pass the matrices to the shader
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		//Початок малювання карт
+		//Start draw maps
 		glBindVertexArray(cubeVAO);
 		model = glm::rotate(model, 1.5708f, glm::vec3(1.0f, 0.0f, 0.0f));
 		int i = 0;
 		for (vector<WorldMapCoordinates>::iterator map = mapData.worldMapCoordinate.begin(); map != mapData.worldMapCoordinate.end(); ++map, i++)
-			drowMap(map->getCoordinateX(), map->getCoordinateY(), model, modelLoc, textureMap[i]);
+			mapData.drowMap(map->getCoordinateX(), map->getCoordinateY(), model, modelLoc, textureMap[i]);
 		glBindVertexArray(0);
-		//кінець малювання карт
-
+		//End draw maps
+		
 		//Points start
 		glBindVertexArray(pointsRepository->VAO);
 		int pointsVectorSize = pointsRepository->getPointsVector().size();
@@ -332,18 +307,18 @@ int main() {
 		glBindVertexArray(0);
 		//Points Trajectory end 
 
-		//початок малювання літачка 
+		//Start draw airplane 
 		airplaneShader.Use();
 		glUniformMatrix4fv(glGetUniformLocation(airplaneShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(glGetUniformLocation(airplaneShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		drone.draw(model, modelLoc, airplaneTexture);
 		drone.getDroneModel().Draw(shader);
-		//кінець малювання літака 
+		//end draw airplane
 		
-		// початок малювання оточення 
-		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content
+		// start drow CubMap
+		glDepthFunc(GL_LEQUAL); 
 		skyboxShader.Use();
-		view = glm::mat4(glm::mat3(InputControl::camera.GetViewMatrix()));	// Remove any translation component of the view matri
+		view = glm::mat4(glm::mat3(InputControl::camera.GetViewMatrix()));	
 		glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
@@ -352,15 +327,16 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindVertexArray(0);
-		glDepthFunc(GL_LESS); // Set depth function back to default
-	   // кінець малювання оточення 
+		glDepthFunc(GL_LESS); 
+	   // end drow CubMap
 	
+	  //start draw text
 		text.RenderText(shaderText, "Position X: " + to_string((int)dronePosition::pos_object_x), 0.0f, 10.0f, 0.5f, glm::vec3(20.0f, 0.8f, 0.2f));
 		text.RenderText(shaderText, "Position Y: " + to_string((int)dronePosition::pos_object_y), 0.0f, 30.0f, 0.5f, glm::vec3(40.0f, 0.8f, 0.2f));
 		text.RenderText(shaderText, "Direction: " + to_string((int)(dronePosition::direction*100)), 0.0f, 50.0f, 0.5f, glm::vec3(50.0f, 0.8f, 0.2f));
 		text.RenderText(shaderText, "Height Y: " + to_string((int)(dronePosition::height*100)), 0.0f, 70.0f, 0.5f, glm::vec3(60.0f, 0.8f, 0.2f));
 		text.RenderText(shaderText, " ", 0.5f, 0.0f, 0.5f, glm::vec3(20.0f, 0.8f, 0.2f));
-		// Swap the buffers
+		//end draw text
 		glfwSwapBuffers(window);
 	}
 
