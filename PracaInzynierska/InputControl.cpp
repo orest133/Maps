@@ -7,7 +7,6 @@ float InputControl::lastFrame = 0.0f;
 //ofstream InputControl::myfile;
 
 void InputControl::doMovement() {
-	// Camera controls
 	if (Keyboard::keys[GLFW_KEY_W])
 	{
 		InputControl::camera.ProcessKeyboard(FORWARD, deltaTime);
@@ -107,7 +106,7 @@ void InputControl::mousePosCallback(GLFWwindow * window,
 								double xPos,
 								double yPos) {
 	GLfloat xOffset = xPos - Camera::cameraLastX;
-	GLfloat yOffset = Camera::cameraLastY - yPos;  // Reversed since y-coordinates go from bottom to left
+	GLfloat yOffset = Camera::cameraLastY - yPos;  
 	Camera::cameraLastX = xPos;
 	Camera::cameraLastY = yPos;
 	if (InputControl::firstMove) {
@@ -132,7 +131,6 @@ void InputControl::mouseClickCallback(GLFWwindow * window,
 			0.3f,
 			InputControl::camera.GetPosition().z);
 
-		//pointsRepository->addPoint(point);
 		pointsRepository->addPoint(point2);
 		std::cout << "[POINTS AMOUNT] " << pointsRepository->getPointsVector().size() << std::endl;
 	}
