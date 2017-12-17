@@ -37,7 +37,6 @@ void Camera::ProcessMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean co
 	this->yaw += xOffset;
 	this->pitch += yOffset;
 
-	// Make sure that when pitch is out of bounds, screen doesn't get flipped
 	if (constrainPitch)
 	{
 		if (this->pitch > 89.0f)
@@ -51,7 +50,6 @@ void Camera::ProcessMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean co
 		}
 	}
 
-	// Update Front, Right and Up Vectors using the updated Eular angles
 	this->updateCameraVectors();
 }
 
@@ -92,13 +90,13 @@ void Camera::SetPitch(GLfloat pitch)
 }
 
 void Camera::updateCameraVectors() {
-	// Calculate the new Front vector
+
 	glm::vec3 front;
 	front.x = cos(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
 	front.y = sin(glm::radians(this->pitch));
 	front.z = sin(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
 	this->front = glm::normalize(front);
-	// Also re-calculate the Right and Up vector
-	this->right = glm::normalize(glm::cross(this->front, this->worldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+
+	this->right = glm::normalize(glm::cross(this->front, this->worldUp));  
 	this->up = glm::normalize(glm::cross(this->right, this->front));
 }
