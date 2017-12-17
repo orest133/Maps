@@ -26,7 +26,7 @@ Trajectory::~Trajectory()
 		glm::mat4 point;
 		glBindTexture(GL_TEXTURE_2D, textureTrajectory);
 		point = glm::translate(point, glm::vec3(pointsRepositoryTrajectory->getPointsVector().at(i).getX(),
-			pointsRepositoryTrajectory->getPointsVector().at(i).getY()+ 0.07,
+			pointsRepositoryTrajectory->getPointsVector().at(i).getY(),
 			pointsRepositoryTrajectory->getPointsVector().at(i).getZ()));
 		point = glm::scale(point, glm::vec3(0.004f, 0.004f, 0.004f));
 		point = glm::rotate(point, dronePosition::direction, glm::vec3(0.0f, 1.0f, 0.0f));
