@@ -30,9 +30,16 @@
 #include "SOIL2/SOIL2.h"
 
 #include "Text.h"
+//NANA GUI
+#include <nana/gui.hpp>
+#include <nana/gui/widgets/spinbox.hpp>
+#include <nana/gui/widgets/button.hpp>
+#include <nana/gui/widgets/label.hpp>
 
+using namespace nana;
 
 int SCREEN_WIDTH = 0, SCREEN_HEIGHT = 0;
+float windowK = 1.7f;
 
 
 void  drowLine(glm::mat4 model, GLint modelLoc, int pointsCount, GLfloat *lineVertices, int lineVerticesSize) {
@@ -65,7 +72,7 @@ int main() {
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	getResolution::GetDesktopResolution(SCREEN_HEIGHT, SCREEN_WIDTH);
-	GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH/1.7, SCREEN_HEIGHT/ 1.7, "Ivan Sopyliuk", nullptr, nullptr);
+	GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH / windowK, SCREEN_HEIGHT / windowK, "Ivan Sopyliuk", nullptr, nullptr);
 	if (nullptr == window) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -92,6 +99,45 @@ int main() {
 	MapData mapData;
 	Drone drone;
 	TrajectoryPointsRepository *pointsRepositoryTrajectory = new TrajectoryPointsRepository();
+
+
+	//Define a form.
+	form fm(API::make_center(240, 160), appear::decorate<>());
+	fm.caption("Point position setting");
+	fm.is_zoomed(false);
+	//Define spboxes
+	spinbox spboxX{ fm, true};
+	spboxX.range(-99999.9f, 99999.9f, 0.1f);
+	spinbox spboxY{ fm, true };
+	spboxY.range(-99999.9f, 99999.9f, 0.1f);
+	spinbox spboxZ{ fm, true };
+	spboxZ.range(-99999.9f, 99999.9f, 0.1f);
+	//Define a button and answer the click event.
+	button saveBtn{ fm,"Save" };
+	spboxX.events().text_changed([&] {
+		pointsRepository->getPointsVector().at(pointsRepository->getPointer()).setX(stof(spboxX.value()));
+	});
+	spboxY.events().text_changed([&] {
+		pointsRepository->getPointsVector().at(pointsRepository->getPointer()).setY(stof(spboxY.value()));
+	});
+	spboxZ.events().text_changed([&] {
+		pointsRepository->getPointsVector().at(pointsRepository->getPointer()).setZ(stof(spboxZ.value()));
+	});
+	saveBtn.events().click([&] {
+		pointsRepository->getPointsVector().at(pointsRepository->getPointer()).setX(stof(spboxX.value()));
+		pointsRepository->getPointsVector().at(pointsRepository->getPointer()).setY(stof(spboxY.value()));
+		pointsRepository->getPointsVector().at(pointsRepository->getPointer()).setZ(stof(spboxZ.value()));
+		/*std::cout << spboxX.value() << std::endl;
+		std::cout << spboxY.value() << std::endl;
+		std::cout << spboxZ.value() << std::endl;*/
+		pointsRepository->setEditingMode(false);
+		fm.hide();
+	});
+	place  fm_place{ fm };
+	fm_place.div("<vertical content>");
+	fm_place.field("content") << spboxX << spboxY << spboxZ << saveBtn;
+	fm_place.collocate();
+
 
 	GLfloat vertices[] = {
 		// Positions          // Colors           // Texture Coords
@@ -215,8 +261,9 @@ int main() {
 		textureMap.push_back(TextureLoading::LoadTexture(path.c_str()));
 		}
 	GLuint cubemapTexture = TextureLoading::LoadCubemap(faces);
-	GLuint cubeTexture = TextureLoading::LoadTexture("res/images/triangle.png");
-	GLuint textureTrajectory = TextureLoading::LoadTexture("res/images/textureTrajectory.jpg");
+	GLuint greenTriengleTexture = TextureLoading::LoadTexture("res/images/green_triangle.png");
+	GLuint redTriengleTexture = TextureLoading::LoadTexture("res/images/textureTrajectory.jpg");
+	GLuint navyTriengleTexture = TextureLoading::LoadTexture("res/images/navy_triangle.png");
 	GLuint airplaneTexture = TextureLoading::LoadTexture("res/models/texture.png");
 	float j = 0;
 
@@ -268,7 +315,12 @@ int main() {
 		GLfloat *lineVertices = new GLfloat[arraySize]();
 		for (unsigned int i = 0; i < pointsVectorSize; i++) {
 			glm::mat4 point;
-			glBindTexture(GL_TEXTURE_2D, cubeTexture);
+			if (i == pointsRepository->getPointer()) {
+				glBindTexture(GL_TEXTURE_2D, navyTriengleTexture);
+			}
+			else {
+				glBindTexture(GL_TEXTURE_2D, greenTriengleTexture);
+			}
 			point = glm::translate(point, glm::vec3(pointsRepository->getPointsVector().at(i).getX(),
 				pointsRepository->getPointsVector().at(i).getY(),
 				pointsRepository->getPointsVector().at(i).getZ()));
@@ -283,13 +335,14 @@ int main() {
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindVertexArray(0);
-		//Points end
 		drowLine(model, modelLoc, pointsVectorSize, lineVertices, arraySize);
 		delete[] lineVertices;
+		//Points end
+		
 		//CameraPointer start
 		glBindVertexArray(pointsRepository->VAO);
 		glm::mat4 point;
-		glBindTexture(GL_TEXTURE_2D, cubeTexture);
+		glBindTexture(GL_TEXTURE_2D, redTriengleTexture);
 		point = glm::translate(point, glm::vec3(InputControl::camera.GetPosition().x,
 			0.5f,
 			InputControl::camera.GetPosition().z));
@@ -300,10 +353,10 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindVertexArray(0);
 		//CameraPointer end
-		
+
 		//Points Trajectory start
 		glBindVertexArray(pointsRepositoryTrajectory->VAO);
-		tmpTime = Trajectory::drow(tmpTime, model, modelLoc, textureTrajectory, pointsRepositoryTrajectory);
+		tmpTime = Trajectory::drow(tmpTime, model, modelLoc, redTriengleTexture, pointsRepositoryTrajectory);
 		glBindVertexArray(0);
 		//Points Trajectory end 
 
@@ -328,14 +381,30 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindVertexArray(0);
 		glDepthFunc(GL_LESS); 
-	   // end drow CubMap
+		// end drow CubMap
 	
-	  //start draw text
+		//start draw text
 		text.RenderText(shaderText, "Position X: " + to_string((int)dronePosition::pos_object_x), 0.0f, 10.0f, 0.5f, glm::vec3(20.0f, 0.8f, 0.2f));
 		text.RenderText(shaderText, "Position Y: " + to_string((int)dronePosition::pos_object_y), 0.0f, 30.0f, 0.5f, glm::vec3(40.0f, 0.8f, 0.2f));
 		text.RenderText(shaderText, "Direction: " + to_string((int)(dronePosition::direction*100)), 0.0f, 50.0f, 0.5f, glm::vec3(50.0f, 0.8f, 0.2f));
 		text.RenderText(shaderText, "Height Y: " + to_string((int)(dronePosition::height*100)), 0.0f, 70.0f, 0.5f, glm::vec3(60.0f, 0.8f, 0.2f));
 		text.RenderText(shaderText, " ", 0.5f, 0.0f, 0.5f, glm::vec3(20.0f, 0.8f, 0.2f));
+		if (pointsRepository->getPointsVector().size() > 0) {
+			CheckPoint currentPoint = pointsRepository->getPointsVector().at(pointsRepository->getPointer());
+			text.RenderText(shaderText, "Point X: " + to_string(currentPoint.getX()), SCREEN_WIDTH - 100, SCREEN_HEIGHT - 60, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+			text.RenderText(shaderText, "Point Y: " + to_string(currentPoint.getY()), SCREEN_WIDTH - 100, SCREEN_HEIGHT - 80, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+			text.RenderText(shaderText, "Point Z: " + to_string(currentPoint.getZ()), SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+			currentPoint.~CheckPoint();
+			if (pointsRepository->getEditingMode()) {
+				//Show the form
+				fm.show();
+			}
+			else {
+				spboxX.value(to_string(currentPoint.getX()));
+				spboxY.value(to_string(currentPoint.getY()));
+				spboxZ.value(to_string(currentPoint.getZ()));
+			}
+		}
 		//end draw text
 		glfwSwapBuffers(window);
 	}
